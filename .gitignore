@@ -8,3 +8,4 @@ logs/
 *.duckdb.wal
 project_report/latex/build/
 project_report/latex_report/build/
+project_implementation/scripts
