@@ -1,0 +1,10 @@
+.DS_Store
+.venv/
+node_modules/
+target/
+dbt_packages/
+logs/
+*.duckdb
+*.duckdb.wal
+project_report/latex/build/
+project_report/latex_report/build/

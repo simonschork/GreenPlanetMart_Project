@@ -1,0 +1,172 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: Calendar dimension generated from inventory source dates through the current date.
+    columns:
+      - name: date_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_material
+    description: Conformed material dimension for inventory and future sales and procurement marts.
+    columns:
+      - name: material_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_customer
+    description: Conformed customer dimension for sales and fulfillment marts.
+    columns:
+      - name: customer_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_supplier
+    description: Conformed supplier dimension for procurement marts, including an unknown/internal-transfer member.
+    columns:
+      - name: supplier_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_plant
+    description: Conformed plant dimension derived from plant master data.
+    columns:
+      - name: plant_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_sales_org
+    description: Conformed sales organization dimension.
+    columns:
+      - name: sales_org_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_pricing_condition_type
+    description: Conformed pricing condition type dimension for sales pricing analysis.
+    columns:
+      - name: pricing_condition_type_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_distribution_channel
+    description: Conformed distribution channel dimension.
+    columns:
+      - name: distribution_channel_key
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_storage_location
+    description: Storage location dimension keyed by client, plant, and storage location.
+    columns:
+      - name: storage_location_key
+        tests:
+          - not_null
+          - unique
+
+  - name: fct_inventory_snapshot
+    description: Inventory snapshot fact table keyed to date, material, plant, and storage location dimensions.
+    columns:
+      - name: snapshot_date_key
+        tests:
+          - not_null
+      - name: material_key
+        tests:
+          - not_null
+      - name: plant_key
+        tests:
+          - not_null
+      - name: storage_location_key
+        tests:
+          - not_null
+
+  - name: fct_sales_billing
+    description: Billing item fact table keyed to date, customer, material, sales organization, and distribution channel dimensions.
+    columns:
+      - name: billing_date_key
+        tests:
+          - not_null
+      - name: customer_key
+        tests:
+          - not_null
+      - name: material_key
+        tests:
+          - not_null
+      - name: sales_org_key
+        tests:
+          - not_null
+
+  - name: fct_sales_pricing
+    description: Billing item pricing fact table at billing item by pricing condition type grain.
+    columns:
+      - name: billing_date_key
+        tests:
+          - not_null
+      - name: customer_key
+        tests:
+          - not_null
+      - name: material_key
+        tests:
+          - not_null
+      - name: sales_org_key
+        tests:
+          - not_null
+      - name: distribution_channel_key
+        tests:
+          - not_null
+      - name: pricing_condition_type_key
+        tests:
+          - not_null
+
+  - name: fct_order_fulfillment
+    description: Sales order item fulfillment fact table keyed to customer, material, sales organization, plant, and date dimensions.
+    columns:
+      - name: order_date_key
+        tests:
+          - not_null
+      - name: requested_delivery_date_key
+        tests:
+          - not_null
+      - name: customer_key
+        tests:
+          - not_null
+      - name: material_key
+        tests:
+          - not_null
+      - name: sales_org_key
+        tests:
+          - not_null
+      - name: distribution_channel_key
+        tests:
+          - not_null
+      - name: plant_key
+        tests:
+          - not_null
+
+  - name: fct_procurement_schedule
+    description: Purchase order schedule line fact table keyed to supplier, material, plant, and date dimensions.
+    columns:
+      - name: purchase_order_date_key
+        tests:
+          - not_null
+      - name: planned_delivery_date_key
+        tests:
+          - not_null
+      - name: supplier_key
+        tests:
+          - not_null
+      - name: material_key
+        tests:
+          - not_null
+      - name: plant_key
+        tests:
+          - not_null

@@ -1,0 +1,84 @@
+version: 2
+
+sources:
+  - name: raw
+    database: greenplanetmart
+    schema: raw
+    tables:
+      - name: mard
+      - name: mara
+      - name: makt
+      - name: t001w
+      - name: vbak
+      - name: vbap
+      - name: vbep
+      - name: vbrk
+      - name: vbrp
+      - name: likp
+      - name: lips
+      - name: vbfa
+      - name: ekko
+      - name: ekpo
+      - name: eket
+      - name: ekbe
+      - name: kna1
+      - name: lfa1
+      - name: konv
+      - name: tvko
+      - name: tvkot
+      - name: tvtw
+      - name: tvtwt
+
+models:
+  - name: stg_sap__mard
+    description: Inventory stock by material, plant, and storage location.
+  - name: stg_sap__mara
+    description: Material master records.
+  - name: stg_sap__makt
+    description: Material descriptions.
+  - name: stg_sap__t001w
+    description: Plant master records.
+  - name: stg_sap__kna1
+    description: Customer master records.
+  - name: stg_sap__lfa1
+    description: Supplier master records.
+  - name: stg_sap__vbrk
+    description: Billing document header records.
+  - name: stg_sap__vbrp
+    description: Billing document item records.
+  - name: stg_sap__konv
+    description: Pricing condition records.
+  - name: stg_sap__ekko
+    description: Purchase order header records.
+  - name: stg_sap__ekpo
+    description: Purchase order item records.
+  - name: stg_sap__eket
+    description: Purchase order schedule line records.
+  - name: stg_sap__vbak
+    description: Sales order header records.
+  - name: stg_sap__vbap
+    description: Sales order item records.
+  - name: stg_sap__vbep
+    description: Sales order schedule line records.
+  - name: stg_sap__likp
+    description: Delivery header records.
+  - name: stg_sap__lips
+    description: Delivery item records.
+  - name: stg_sap__tvko
+    description: Sales organization master records.
+  - name: stg_sap__tvkot
+    description: Sales organization text records.
+  - name: stg_sap__tvtw
+    description: Distribution channel master records.
+  - name: stg_sap__tvtwt
+    description: Distribution channel text records.
+  - name: int_inventory_current
+    description: Inventory dataset enriched with material and plant attributes.
+  - name: int_order_fulfillment
+    description: Sales order items enriched with requested and actual delivery information.
+  - name: int_procurement_schedule_lines
+    description: Procurement schedule lines enriched with purchase order, material, plant, and supplier context.
+  - name: int_sales_pricing_conditions
+    description: Billing item pricing conditions enriched with customer, product, and sales organization context.
+  - name: int_sales_billing_items
+    description: Billing item dataset enriched with header, customer, and sales organization context.

@@ -1,0 +1,8 @@
+greenplanetmart:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '/Users/simonschork/Library/CloudStorage/OneDrive-Persönlich/10 Projects/Master Business Intelligence/10 Data Modeling and Reporting/Project/project_implementation/warehouse/greenplanetmart.duckdb'
+      threads: 4
+

@@ -1,0 +1,4 @@
+name: greenplanetmart
+type: duckdb
+options:
+  filename: ../../../warehouse/greenplanetmart.duckdb

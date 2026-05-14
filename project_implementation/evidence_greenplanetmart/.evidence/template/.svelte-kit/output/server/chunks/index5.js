@@ -1,0 +1,1 @@
+const r=(t,e)=>{if(t instanceof String&&(t=t.toString()),typeof t!="string"||t.startsWith("http")||t.startsWith("#")||/^[^/]*:/.test(t))return t;let s=e.deployment.basePath;return s?(s?.startsWith("/")||(s=`/${s}`),s.endsWith("/")&&(s=s.slice(0,-1)),t.startsWith(s)?t:(t.startsWith("/")||(t=`/${t}`),`${s}${t}`)):t},i={deployment:{basePath:""}},n=t=>r(t,i);export{n as a,i as c};

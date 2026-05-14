@@ -1,0 +1,8 @@
+greenplanetmart:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /absolute/path/to/project/project_implementation/warehouse/greenplanetmart.duckdb
+      threads: 4
+
