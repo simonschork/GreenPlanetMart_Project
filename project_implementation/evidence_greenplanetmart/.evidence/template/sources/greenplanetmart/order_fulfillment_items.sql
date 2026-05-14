@@ -18,7 +18,7 @@ with deduplicated_items as (
         max(coalesce(confirmed_quantity, 0)) as confirmed_quantity,
         max(coalesce(delivered_quantity, 0)) as delivered_quantity,
         max(coalesce(open_quantity, 0)) as open_quantity,
-        avg(coalesce(delivery_delay_days, 0)) as delivery_delay_days,
+        avg(delivery_delay_days) as delivery_delay_days,
         max(case when is_on_time_delivery then 1 else 0 end) as is_on_time_delivery,
         max(case when is_fully_delivered then 1 else 0 end) as is_fully_delivered
     from marts.fct_order_fulfillment
@@ -67,6 +67,7 @@ select
     items.open_quantity,
     items.delivery_delay_days,
     case
+        when items.actual_delivery_date is null then 'Not delivered yet'
         when items.delivery_delay_days <= 0 then 'On time or early'
         when items.delivery_delay_days <= 7 then '1 to 7 days late'
         when items.delivery_delay_days <= 30 then '8 to 30 days late'

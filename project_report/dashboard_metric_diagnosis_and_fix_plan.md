@@ -240,29 +240,49 @@ order by scheduled_net_value desc;
 
 ## Secondary Observation
 
-### Fulfillment KPI denominator semantics may need confirmation
+### Fulfillment KPI denominator semantics required an additional page-level correction
 
 - Responsible file / model / page:
   - `project_implementation/evidence_greenplanetmart/sources/greenplanetmart/order_fulfillment_items.sql:21-23`
   - `project_implementation/evidence_greenplanetmart/sources/greenplanetmart/order_fulfillment_items.sql:69-75`
   - `project_implementation/evidence_greenplanetmart/pages/fulfillment.md:11-16`
 - Relevant SQL snippet:
-  - `avg(coalesce(delivery_delay_days, 0)) as delivery_delay_days`
+  - `avg(delivery_delay_days) as delivery_delay_days`
   - `case when items.is_on_time_delivery = 1 then true else false end as is_on_time_delivery`
+  - `when items.actual_delivery_date is null then 'Not delivered yet'`
   - `when items.delivery_delay_days <= 0 then 'On time or early'`
 - Observation:
-  Evidence treats undelivered items as not on time and also buckets null actual-delivery rows into `On time or early`.
+  The fulfillment KPI already treated undelivered items as not on time, but the delay mix was still bucketing null `actual_delivery_date` rows into `On time or early`.
 - Values:
   - Current dashboard query value: `50.30`
   - Delivered-only recent on-time rate: `75.37`
-  - Recent rows with `actual_delivery_date is null`: `6193`
+  - Recent rows with `actual_delivery_date is null`: `6194`
 - Interpretation:
-  This is a real semantic divergence in Evidence, but it is separate from the `>1000%` card-display bug. I am not ranking it as a mandatory fix without KPI-definition confirmation.
+  This was a real semantic divergence in Evidence. It has now been corrected by preserving null `delivery_delay_days` and introducing a separate `Not delivered yet` bucket in the delay mix.
+
+### Procurement quantity KPI semantics required a reporting redesign
+
+- Responsible file / model / page:
+  - `project_implementation/evidence_greenplanetmart/pages/procurement.md`
+  - `project_implementation/evidence_greenplanetmart/sources/greenplanetmart/procurement_schedule_lines.sql`
+- Relevant SQL snippet:
+  - previous KPI: `round(sum(open_quantity), 0) as open_quantity`
+  - current KPI: `count(*) filter (where open_quantity > 0) as open_schedule_lines`
+  - current unit breakdown: `group by order_unit`
+- Observation:
+  The procurement page was still summing `open_quantity` across mixed order units such as `KG`, `L`, and `EA`, which made the headline quantity KPI numerically correct but analytically weak.
+- Values:
+  - current 15-month dashboard open quantity: `20,680,299,711.00`
+  - open schedule lines: `4,617`
+  - `KG` share of open quantity: `98.85%`
+  - material `000000006666666689` share of scheduled net value: `97.16%`
+- Interpretation:
+  The remaining "crazy high" procurement numbers were driven by a small number of very large raw bulk-material lines, not by a surviving join-fanout bug or decimal-scaling defect. The page was updated to emphasize open line counts, unit-aware backlog breakdowns, and supplier exposure scaled to millions by currency.
 
 ## Merged Findings and Conflicts
 
 - Merged duplicate findings from the three read-only subagents.
-- No stale Evidence cache issue was found. The built query metadata matched the current page SQL.
+- A later validation pass found a separate stale Evidence source-cache issue: the generated parquet files under `.evidence/template/static/data/...` can remain out of sync with corrected dbt outputs unless `evidence sources` is rerun.
 - Inventory expected totals depend on a deterministic tie-breaker because some stock keys share the same latest `recordstamp`.
 - Procurement corrected backlog depends on the survivorship rule used. The ranked fix plan uses raw-latest survivorship, not latest rows from the already-fanned-out intermediate layer.
 - No evidence was found for a procurement unit-price scaling bug in the suspicious Tyranex rows. Those large values already exist in the raw extract.
@@ -321,13 +341,20 @@ order by scheduled_net_value desc;
   - `project_implementation/evidence_greenplanetmart/pages/fulfillment.md`
   - `project_implementation/evidence_greenplanetmart/pages/procurement.md`
 - Split supplier exposure by `supplier_name, document_currency` on the procurement page.
+- Reworked the procurement page so backlog is presented as `Open Schedule Lines` rather than a mixed-unit quantity sum, added an `Open Backlog by Unit` section, and scaled supplier exposure to millions while preserving currency splits.
 - Split same-name plants by `client_id, plant_id` on the inventory page.
 - Reworked the inventory zero-stock table empty state so the Evidence build no longer logs empty-dataset warnings when the current snapshot has zero zero-stock positions.
+- Corrected the fulfillment delay mix so undelivered rows are shown as `Not delivered yet` instead of being lumped into `On time or early`.
 
 ### dbt execution wrapper fix
 
 - Updated `project_implementation/scripts/run_dbt.sh` to invoke `.venv/bin/python .venv/bin/dbt` directly.
 - This avoids failures from stale virtualenv shebang paths when the project folder is moved or renamed.
+
+### Evidence build workflow fix
+
+- Added a `prebuild` hook in `project_implementation/evidence_greenplanetmart/package.json` that runs `evidence sources` before `evidence build`.
+- This ensures the generated Evidence parquet cache is refreshed from the current warehouse state before static report generation.
 
 ## Validation Results
 
@@ -359,6 +386,7 @@ Result:
 
 - static build completed successfully
 - the prior empty-dataset warning no longer appears
+- Evidence source refresh now runs automatically before build
 - build artifact was written to `project_implementation/evidence_greenplanetmart/build`
 
 ### Revalidated KPI checkpoints
@@ -368,6 +396,8 @@ Fulfillment:
 - on-time ratio: `0.5028` -> expected display `50.3%`
 - fully delivered ratio: `0.6654` -> expected display `66.5%`
 - average delay days: `7.8`
+- corrected delay mix now separates `Not delivered yet`: `6,194`
+- `On time or early` delay bucket after the fix: `9,356`
 
 Inventory:
 
@@ -378,10 +408,13 @@ Inventory:
 
 Procurement:
 
-- open quantity: `20,680,299,711.00`
+- open quantity remains available for unit-specific analysis: `20,680,299,711.00`
+- open schedule lines: `4,617`
 - overdue ratio: `0.26` -> expected display `26.0%`
 - fully received ratio: `0.74` -> expected display `74.0%`
 - contradictory fully-received-and-open-or-overdue rows: `0`
+- `KG` share of open quantity: `98.85%`
+- material `000000006666666689` share of scheduled net value: `97.16%`
 
 Supplier exposure:
 
@@ -394,4 +427,7 @@ Supplier exposure:
 - Inventory and procurement fanout inflation from historical duplicates is fixed at the dbt layer.
 - Evidence now reads the corrected marts directly instead of trying to recover latest state with `max(...)`.
 - Supplier exposure is no longer blended across currencies.
+- Procurement reporting no longer presents a mixed-unit quantity sum as the headline backlog KPI.
+- Fulfillment delay buckets now distinguish undelivered items from genuinely early or on-time deliveries.
+- Evidence builds now refresh source extracts automatically before generating the static site.
 - The remaining Evidence build warning was resolved by handling the empty zero-stock result explicitly.
