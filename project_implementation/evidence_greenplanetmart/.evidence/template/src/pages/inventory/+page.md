@@ -59,18 +59,43 @@ limit 15
 </Grid>
 
 ```sql inventory_zero_stock_hotspots
+with zero_stock_hotspots as (
+    select
+        client_id,
+        plant_id,
+        plant_name,
+        plant_name || ' (' || client_id || '/' || plant_id || ')' as plant_label,
+        storage_location_id,
+        count(*) as zero_stock_positions
+    from greenplanetmart.inventory_positions
+    where is_zero_stock
+    group by 1, 2, 3, 4, 5
+    order by zero_stock_positions desc, plant_label
+    limit 20
+)
+
 select
     client_id,
     plant_id,
     plant_name,
-    plant_name || ' (' || client_id || '/' || plant_id || ')' as plant_label,
+    plant_label,
     storage_location_id,
-    count(*) as zero_stock_positions
-from greenplanetmart.inventory_positions
-where is_zero_stock
-group by 1, 2, 3, 4, 5
-order by zero_stock_positions desc, plant_label
-limit 20
+    zero_stock_positions
+from zero_stock_hotspots
+
+union all
+
+select
+    'N/A' as client_id,
+    'N/A' as plant_id,
+    'No zero-stock positions found in the current snapshot' as plant_name,
+    'No zero-stock positions found in the current snapshot' as plant_label,
+    'N/A' as storage_location_id,
+    0 as zero_stock_positions
+where not exists (
+    select 1
+    from zero_stock_hotspots
+)
 ```
 
 ## Zero-Stock Hotspots

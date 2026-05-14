@@ -1,7 +1,7 @@
 # Dashboard Metric Diagnosis and Ranked Fix Plan
 
 Date: 2026-05-14  
-Status: Implemented on 2026-05-14. dbt and Evidence were updated and the reviewed KPI checks were rerun successfully.
+Status: Completed on 2026-05-14. dbt and Evidence fixes were implemented, revalidated, and the remaining Evidence empty-dataset warning was removed.
 
 ## Scope
 
@@ -294,11 +294,104 @@ order by scheduled_net_value desc;
    Confidence: high  
    Risk: low
 
-## Approval Gate
+## Implemented Changes
 
-If approved, the next step is:
+### dbt survivorship and grain fixes
 
-1. Apply only the minimal fixes above.
-2. Run `dbt build` and tests.
-3. Run the validation SQL again.
-4. Report before-and-after metric values that prove the corrections.
+- Added latest-row survivorship filtering to the affected SAP staging models before downstream joins:
+  - `stg_sap__mard`
+  - `stg_sap__mara`
+  - `stg_sap__makt`
+  - `stg_sap__t001w`
+  - `stg_sap__eket`
+  - `stg_sap__ekpo`
+  - `stg_sap__ekko`
+  - `stg_sap__lfa1`
+- Applied deterministic `row_number()` tie-breaking on business keys ordered by latest `source_recordstamp` and relevant quantity/date columns.
+- Added regression tests:
+  - `project_implementation/dbt_greenplanetmart/tests/fct_inventory_snapshot_unique_grain.sql`
+  - `project_implementation/dbt_greenplanetmart/tests/fct_procurement_schedule_unique_grain.sql`
+
+### Evidence source and page fixes
+
+- Removed stale `max(...)`-based survivorship logic from:
+  - `project_implementation/evidence_greenplanetmart/sources/greenplanetmart/inventory_positions.sql`
+  - `project_implementation/evidence_greenplanetmart/sources/greenplanetmart/procurement_schedule_lines.sql`
+- Corrected KPI card percent handling on:
+  - `project_implementation/evidence_greenplanetmart/pages/fulfillment.md`
+  - `project_implementation/evidence_greenplanetmart/pages/procurement.md`
+- Split supplier exposure by `supplier_name, document_currency` on the procurement page.
+- Split same-name plants by `client_id, plant_id` on the inventory page.
+- Reworked the inventory zero-stock table empty state so the Evidence build no longer logs empty-dataset warnings when the current snapshot has zero zero-stock positions.
+
+### dbt execution wrapper fix
+
+- Updated `project_implementation/scripts/run_dbt.sh` to invoke `.venv/bin/python .venv/bin/dbt` directly.
+- This avoids failures from stale virtualenv shebang paths when the project folder is moved or renamed.
+
+## Validation Results
+
+### dbt validation
+
+Executed successfully:
+
+```bash
+project_implementation/scripts/run_dbt.sh parse
+project_implementation/scripts/run_dbt.sh build --select +fct_inventory_snapshot +fct_procurement_schedule
+```
+
+Result:
+
+- `dbt parse` passed
+- scoped `dbt build` passed
+- both new uniqueness tests passed
+
+### Evidence validation
+
+Executed successfully:
+
+```bash
+cd project_implementation/evidence_greenplanetmart
+npm run build
+```
+
+Result:
+
+- static build completed successfully
+- the prior empty-dataset warning no longer appears
+- build artifact was written to `project_implementation/evidence_greenplanetmart/build`
+
+### Revalidated KPI checkpoints
+
+Fulfillment:
+
+- on-time ratio: `0.5028` -> expected display `50.3%`
+- fully delivered ratio: `0.6654` -> expected display `66.5%`
+- average delay days: `7.8`
+
+Inventory:
+
+- unrestricted stock total: `5,799,633,574.75`
+- zero-stock positions: `0`
+- `CYMBAL NY (250/1000)`: `951,155,226.00`
+- `CYMBAL NY (200/1000)`: `172.00`
+
+Procurement:
+
+- open quantity: `20,680,299,711.00`
+- overdue ratio: `0.26` -> expected display `26.0%`
+- fully received ratio: `0.74` -> expected display `74.0%`
+- contradictory fully-received-and-open-or-overdue rows: `0`
+
+Supplier exposure:
+
+- `Tyranex Solution (USD)`: `935,908,143,795.00`
+- `Tyranex Solution (EUR)`: `888,786,588,800.00`
+
+## Final Outcome
+
+- The percent double-formatting defect is fixed.
+- Inventory and procurement fanout inflation from historical duplicates is fixed at the dbt layer.
+- Evidence now reads the corrected marts directly instead of trying to recover latest state with `max(...)`.
+- Supplier exposure is no longer blended across currencies.
+- The remaining Evidence build warning was resolved by handling the empty zero-stock result explicitly.
