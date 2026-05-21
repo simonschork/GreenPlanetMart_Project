@@ -9,3 +9,5 @@ logs/
 project_report/latex/build/
 project_report/latex_report/build/
 project_implementation/source_data/
+project_implementation/evidence_greenplanetmart/build/
+project_implementation/evidence_greenplanetmart/.evidence/

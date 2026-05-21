@@ -1,4 +1,39 @@
-with sales_org as (
+with observed_sales_org as (
+    select distinct
+        client_id,
+        sales_organization_id
+    from {{ ref('stg_sap__tvko') }}
+    where sales_organization_id is not null
+      and sales_organization_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        sales_organization_id
+    from {{ ref('int_sales_billing_items') }}
+    where sales_organization_id is not null
+      and sales_organization_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        sales_organization_id
+    from {{ ref('int_sales_pricing_conditions') }}
+    where sales_organization_id is not null
+      and sales_organization_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        sales_organization_id
+    from {{ ref('int_order_fulfillment') }}
+    where sales_organization_id is not null
+      and sales_organization_id != ''
+),
+sales_org as (
     select * from {{ ref('stg_sap__tvko') }}
 ),
 sales_org_text as (
@@ -8,30 +43,29 @@ sales_org_text as (
 ),
 resolved_sales_org as (
     select
-        sales_org.client_id || '|' || sales_org.sales_organization_id as sales_org_key,
-        sales_org.client_id,
-        sales_org.sales_organization_id,
-        coalesce(sales_org_text.sales_organization_name, sales_org.sales_organization_id) as sales_organization_name,
+        observed_sales_org.client_id || '|' || observed_sales_org.sales_organization_id as sales_org_key,
+        observed_sales_org.client_id,
+        observed_sales_org.sales_organization_id,
+        coalesce(sales_org_text.sales_organization_name, sales_org.sales_organization_id, observed_sales_org.sales_organization_id) as sales_organization_name,
         sales_org.default_currency,
         sales_org.company_code,
         sales_org.purchasing_organization_id,
         sales_org.default_plant_id,
         greatest(sales_org.source_recordstamp, sales_org_text.source_recordstamp) as source_recordstamp
-    from sales_org
+    from observed_sales_org
+    left join sales_org
+        on observed_sales_org.client_id = sales_org.client_id
+       and observed_sales_org.sales_organization_id = sales_org.sales_organization_id
     left join sales_org_text
-        on sales_org.client_id = sales_org_text.client_id
-       and sales_org.sales_organization_id = sales_org_text.sales_organization_id
+        on observed_sales_org.client_id = sales_org_text.client_id
+       and observed_sales_org.sales_organization_id = sales_org_text.sales_organization_id
     qualify row_number() over (
-        partition by sales_org.client_id || '|' || sales_org.sales_organization_id
+        partition by observed_sales_org.client_id || '|' || observed_sales_org.sales_organization_id
         order by greatest(sales_org.source_recordstamp, sales_org_text.source_recordstamp) desc, sales_organization_name asc
     ) = 1
 ),
 clients as (
-    select distinct client_id from {{ ref('stg_sap__tvko') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__vbak') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__vbrk') }}
+    select distinct client_id from observed_sales_org
 )
 
 select

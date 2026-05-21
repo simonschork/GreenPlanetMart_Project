@@ -1,6 +1,53 @@
-with customer_master as (
+with observed_customers as (
+    select distinct
+        client_id,
+        customer_id
+    from {{ ref('stg_sap__kna1') }}
+    where customer_id is not null
+      and customer_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        customer_id
+    from {{ ref('int_sales_billing_items') }}
+    where customer_id is not null
+      and customer_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        customer_id
+    from {{ ref('int_order_fulfillment') }}
+    where customer_id is not null
+      and customer_id != ''
+),
+customer_master as (
+    select * from {{ ref('stg_sap__kna1') }}
+),
+resolved_customers as (
     select
-        client_id || '|' || customer_id as customer_key,
+        observed_customers.client_id || '|' || observed_customers.customer_id as customer_key,
+        observed_customers.client_id,
+        observed_customers.customer_id,
+        coalesce(customer_master.customer_name, observed_customers.customer_id) as customer_name,
+        customer_master.country_code,
+        customer_master.region_code,
+        customer_master.city_name,
+        customer_master.industry_code,
+        customer_master.account_group,
+        customer_master.company_group_id,
+        customer_master.source_recordstamp
+    from observed_customers
+    left join customer_master
+        on observed_customers.client_id = customer_master.client_id
+       and observed_customers.customer_id = customer_master.customer_id
+),
+deduplicated as (
+    select
+        customer_key,
         client_id,
         customer_id,
         customer_name,
@@ -11,18 +58,14 @@ with customer_master as (
         account_group,
         company_group_id,
         source_recordstamp
-    from {{ ref('stg_sap__kna1') }}
+    from resolved_customers
     qualify row_number() over (
-        partition by client_id || '|' || customer_id
-        order by source_recordstamp desc, customer_name asc
+        partition by customer_key
+        order by source_recordstamp desc nulls last, customer_name asc
     ) = 1
 ),
 clients as (
-    select distinct client_id from {{ ref('stg_sap__kna1') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__vbak') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__vbrk') }}
+    select distinct client_id from observed_customers
 )
 
 select
@@ -37,7 +80,7 @@ select
     account_group,
     company_group_id,
     source_recordstamp
-from customer_master
+from deduplicated
 
 union all
 

@@ -79,15 +79,31 @@ models:
       - name: snapshot_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: material_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_material')
+                field: material_key
       - name: plant_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_plant')
+                field: plant_key
       - name: storage_location_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_storage_location')
+                field: storage_location_key
 
   - name: fct_sales_billing
     description: Billing item fact table keyed to date, customer, material, sales organization, and distribution channel dimensions.
@@ -95,15 +111,49 @@ models:
       - name: billing_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: customer_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
       - name: material_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_material')
+                field: material_key
       - name: sales_org_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sales_org')
+                field: sales_org_key
+      - name: distribution_channel_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_distribution_channel')
+                field: distribution_channel_key
+      - name: plant_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_plant')
+                field: plant_key
+      - name: storage_location_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_storage_location')
+                field: storage_location_key
 
   - name: fct_sales_pricing
     description: Billing item pricing fact table at billing item by pricing condition type grain.
@@ -111,21 +161,57 @@ models:
       - name: billing_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: customer_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
       - name: material_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_material')
+                field: material_key
       - name: sales_org_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sales_org')
+                field: sales_org_key
       - name: distribution_channel_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_distribution_channel')
+                field: distribution_channel_key
       - name: pricing_condition_type_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_pricing_condition_type')
+                field: pricing_condition_type_key
+      - name: plant_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_plant')
+                field: plant_key
+      - name: storage_location_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_storage_location')
+                field: storage_location_key
 
   - name: fct_order_fulfillment
     description: Sales order item fulfillment fact table keyed to customer, material, sales organization, plant, and date dimensions.
@@ -133,24 +219,64 @@ models:
       - name: order_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: requested_delivery_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: actual_delivery_date_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: customer_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
       - name: material_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_material')
+                field: material_key
       - name: sales_org_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sales_org')
+                field: sales_org_key
       - name: distribution_channel_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_distribution_channel')
+                field: distribution_channel_key
       - name: plant_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_plant')
+                field: plant_key
+      - name: storage_location_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_storage_location')
+                field: storage_location_key
 
   - name: fct_procurement_schedule
     description: Purchase order schedule line fact table keyed to supplier, material, plant, and date dimensions.
@@ -158,15 +284,41 @@ models:
       - name: purchase_order_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: planned_delivery_date_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: supplier_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_supplier')
+                field: supplier_key
       - name: material_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_material')
+                field: material_key
       - name: plant_key
         tests:
           - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_plant')
+                field: plant_key
+      - name: storage_location_key
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_storage_location')
+                field: storage_location_key

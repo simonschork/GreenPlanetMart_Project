@@ -1,4 +1,57 @@
-with materials as (
+with observed_materials as (
+    select distinct
+        client_id,
+        material_id
+    from {{ ref('stg_sap__mara') }}
+    where material_id is not null
+      and material_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        material_id
+    from {{ ref('int_inventory_current') }}
+    where material_id is not null
+      and material_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        material_id
+    from {{ ref('int_sales_billing_items') }}
+    where material_id is not null
+      and material_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        material_id
+    from {{ ref('int_sales_pricing_conditions') }}
+    where material_id is not null
+      and material_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        material_id
+    from {{ ref('int_order_fulfillment') }}
+    where material_id is not null
+      and material_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        material_id
+    from {{ ref('int_procurement_schedule_lines') }}
+    where material_id is not null
+      and material_id != ''
+),
+materials as (
     select * from {{ ref('stg_sap__mara') }}
 ),
 material_text as (
@@ -8,10 +61,10 @@ material_text as (
 ),
 joined as (
     select
-        materials.client_id || '|' || materials.material_id as material_key,
-        materials.client_id,
-        materials.material_id,
-        coalesce(material_text.material_name, materials.material_id) as material_name,
+        observed_materials.client_id || '|' || observed_materials.material_id as material_key,
+        observed_materials.client_id,
+        observed_materials.material_id,
+        coalesce(material_text.material_name, materials.material_id, observed_materials.material_id) as material_name,
         materials.material_type,
         materials.material_group,
         materials.base_unit,
@@ -21,10 +74,13 @@ joined as (
         materials.weight_unit,
         coalesce(material_text.source_recordstamp, materials.source_recordstamp) as text_recordstamp,
         materials.source_recordstamp
-    from materials
+    from observed_materials
+    left join materials
+        on observed_materials.client_id = materials.client_id
+       and observed_materials.material_id = materials.material_id
     left join material_text
-        on materials.client_id = material_text.client_id
-       and materials.material_id = material_text.material_id
+        on observed_materials.client_id = material_text.client_id
+       and observed_materials.material_id = material_text.material_id
 ),
 deduplicated as (
     select

@@ -1,6 +1,80 @@
-with plant_master as (
+with observed_plants as (
+    select distinct
+        client_id,
+        plant_id
+    from {{ ref('stg_sap__t001w') }}
+    where plant_id is not null
+      and plant_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        plant_id
+    from {{ ref('int_inventory_current') }}
+    where plant_id is not null
+      and plant_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        plant_id
+    from {{ ref('int_sales_billing_items') }}
+    where plant_id is not null
+      and plant_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        plant_id
+    from {{ ref('int_sales_pricing_conditions') }}
+    where plant_id is not null
+      and plant_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        plant_id
+    from {{ ref('int_order_fulfillment') }}
+    where plant_id is not null
+      and plant_id != ''
+
+    union
+
+    select distinct
+        client_id,
+        plant_id
+    from {{ ref('int_procurement_schedule_lines') }}
+    where plant_id is not null
+      and plant_id != ''
+),
+plant_master as (
+    select * from {{ ref('stg_sap__t001w') }}
+),
+resolved_plants as (
     select
-        client_id || '|' || plant_id as plant_key,
+        observed_plants.client_id || '|' || observed_plants.plant_id as plant_key,
+        observed_plants.client_id,
+        observed_plants.plant_id,
+        coalesce(plant_master.plant_name, observed_plants.plant_id) as plant_name,
+        plant_master.country_code,
+        plant_master.region_code,
+        plant_master.city_name,
+        plant_master.sales_organization_id,
+        plant_master.distribution_channel_id,
+        plant_master.shipping_point_id,
+        plant_master.source_recordstamp
+    from observed_plants
+    left join plant_master
+        on observed_plants.client_id = plant_master.client_id
+       and observed_plants.plant_id = plant_master.plant_id
+),
+deduplicated as (
+    select
+        plant_key,
         client_id,
         plant_id,
         plant_name,
@@ -11,20 +85,14 @@ with plant_master as (
         distribution_channel_id,
         shipping_point_id,
         source_recordstamp
-    from {{ ref('stg_sap__t001w') }}
+    from resolved_plants
     qualify row_number() over (
-        partition by client_id || '|' || plant_id
-        order by source_recordstamp desc, plant_name asc
+        partition by plant_key
+        order by source_recordstamp desc nulls last, plant_name asc
     ) = 1
 ),
 clients as (
-    select distinct client_id from {{ ref('stg_sap__t001w') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__vbap') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__vbrp') }}
-    union
-    select distinct client_id from {{ ref('stg_sap__ekpo') }}
+    select distinct client_id from observed_plants
 )
 
 select
@@ -39,7 +107,7 @@ select
     distribution_channel_id,
     shipping_point_id,
     source_recordstamp
-from plant_master
+from deduplicated
 
 union all
 
