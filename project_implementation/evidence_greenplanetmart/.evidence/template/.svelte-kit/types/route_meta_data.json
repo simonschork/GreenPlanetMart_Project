@@ -48,9 +48,6 @@
 	"/manifest.webmanifest": [
 		"src/pages/manifest.webmanifest/+server.js"
 	],
-	"/pricing": [
-		"src/pages/+layout.js"
-	],
 	"/procurement": [
 		"src/pages/+layout.js"
 	],

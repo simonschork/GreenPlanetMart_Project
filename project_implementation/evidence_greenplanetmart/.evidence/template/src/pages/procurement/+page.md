@@ -4,9 +4,9 @@ title: Procurement Performance
 
 # Procurement Performance and Supplier Reliability
 
-This page addresses the supply chain question: which suppliers deliver reliably, and where are procurement delays or open commitments accumulating?
+This page shows where purchasing exposure is building up, which suppliers are underperforming, and where overdue receipts may disrupt operations.
 
-> Use case scope: the procurement mart is strong enough for supplier reliability and backlog analysis, but two reporting constraints remain important. Open quantities span multiple order units such as `KG`, `L`, and `EA`, so they should not be collapsed into one universal quantity KPI. Scheduled values also remain in raw document currencies, so comparisons are only meaningful within the same currency.
+Use it to prioritize supplier follow-up, review open commitments, and focus on the backlog areas with the highest operational or financial impact.
 
 ```sql procurement_kpis
 select
@@ -17,12 +17,14 @@ from greenplanetmart.procurement_schedule_lines
 ```
 
 <Grid cols={3}>
-    <BigValue data={procurement_kpis} value="open_schedule_lines" title="Open Schedule Lines" />
-    <BigValue data={procurement_kpis} value="overdue_rate_pct" title="Overdue Rate (%)" />
-    <BigValue data={procurement_kpis} value="fully_received_rate_pct" title="Fully Received Rate (%)" />
+    <BigValue data={procurement_kpis} value="open_schedule_lines" title="Open Commitments" />
+    <BigValue data={procurement_kpis} value="overdue_rate_pct" title="Overdue Share (%)" />
+    <BigValue data={procurement_kpis} value="fully_received_rate_pct" title="Fully Received Share (%)" />
 </Grid>
 
-## Monthly Procurement Backlog
+Quantities should be compared within the same unit of measure, and values should be interpreted within the same document currency.
+
+## Procurement Backlog Trend
 
 ```sql procurement_monthly_open
 select
@@ -92,7 +94,7 @@ order by scheduled_net_value_m desc
 limit 15
 ```
 
-## Supplier Exposure in Millions by Currency
+## Largest Supplier Commitments
 
 <Grid cols={2}>
     <BarChart data={procurement_top_suppliers} x="supplier_exposure_label" y="scheduled_net_value_m" />
@@ -115,7 +117,7 @@ order by scheduled_net_value desc, open_quantity desc
 limit 20
 ```
 
-## Largest Overdue Commitments
+## Overdue Commitments Requiring Follow-Up
 
 <DataTable data={procurement_overdue_commitments} />
 

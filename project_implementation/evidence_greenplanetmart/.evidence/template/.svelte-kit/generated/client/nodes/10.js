@@ -1,1 +1,1 @@
-export { default as component } from "../../../../src/pages/procurement/+page.md";
+export { default as component } from "../../../../src/pages/sales/+page.md";

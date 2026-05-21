@@ -4,30 +4,49 @@ title: Order Fulfillment
 
 # Order Fulfillment and Delivery Timeliness
 
-This page addresses the operational-efficiency question: are customer orders delivered on time, and where do fulfillment bottlenecks occur?
+This page highlights how reliably customer demand is being fulfilled and where service issues are most likely to affect the customer experience.
 
-> Use case scope: the page uses `fct_order_fulfillment` at sales-order-item grain. Requested and actual delivery dates already include fallback logic from the mart layer so that incomplete operational date fields still support KPI reporting.
+Use it to monitor service levels, recurring delay patterns, and the orders that need operational follow-up.
 
 ```sql fulfillment_kpis
 select
-    round(avg(case when is_on_time_delivery then 1 else 0 end), 4) as on_time_rate_pct,
+    round(
+        avg(
+            case
+                when actual_delivery_date is not null then case when is_on_time_delivery then 1 else 0 end
+            end
+        ),
+        4
+    ) as on_time_delivered_rate_pct,
+    round(avg(case when actual_delivery_date is null then 1 else 0 end), 4) as not_delivered_yet_rate_pct,
     round(avg(delivery_delay_days), 1) as average_delay_days,
     round(avg(case when is_fully_delivered then 1 else 0 end), 4) as fully_delivered_rate_pct
 from greenplanetmart.order_fulfillment_items
 ```
 
-<Grid cols={3}>
-    <BigValue data={fulfillment_kpis} value="on_time_rate_pct" title="On-Time Rate (%)" />
+<Grid cols={4}>
+    <BigValue data={fulfillment_kpis} value="on_time_delivered_rate_pct" title="On-Time Delivered Rate (%)" />
+    <BigValue data={fulfillment_kpis} value="not_delivered_yet_rate_pct" title="Not Delivered Yet (%)" />
     <BigValue data={fulfillment_kpis} value="average_delay_days" title="Average Delay (Days)" />
     <BigValue data={fulfillment_kpis} value="fully_delivered_rate_pct" title="Fully Delivered Rate (%)" />
 </Grid>
 
-## Timeliness Trend
+The service view now separates completed delivery performance from open backlog. Early deliveries still count as on time.
 
-```sql fulfillment_monthly_on_time
+## Service Trend
+
+```sql fulfillment_monthly_service
 select
     requested_delivery_month,
-    round(avg(case when is_on_time_delivery then 1 else 0 end), 4) as on_time_rate
+    round(
+        avg(
+            case
+                when actual_delivery_date is not null then case when is_on_time_delivery then 1 else 0 end
+            end
+        ),
+        4
+    ) as on_time_delivered_rate,
+    round(avg(case when actual_delivery_date is null then 1 else 0 end), 4) as not_delivered_yet_rate
 from greenplanetmart.order_fulfillment_items
 group by 1
 order by 1
@@ -43,7 +62,13 @@ order by 1
 ```
 
 <Grid cols={2}>
-    <LineChart data={fulfillment_monthly_on_time} x="requested_delivery_month" y="on_time_rate" />
+    <LineChart data={fulfillment_monthly_service} x="requested_delivery_month" y="on_time_delivered_rate" />
+    <LineChart data={fulfillment_monthly_service} x="requested_delivery_month" y="not_delivered_yet_rate" />
+</Grid>
+
+## Delay Trend
+
+<Grid cols={1}>
     <LineChart data={fulfillment_monthly_delay} x="requested_delivery_month" y="average_delay_days" />
 </Grid>
 
@@ -77,7 +102,7 @@ order by delivery_delay_days desc
 limit 20
 ```
 
-## Most Delayed Order Items
+## Orders Requiring Attention
 
 <DataTable data={fulfillment_worst_delays} />
 

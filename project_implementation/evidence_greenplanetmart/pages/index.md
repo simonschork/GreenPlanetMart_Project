@@ -1,31 +1,35 @@
 ---
-title: GreenPlanetMart Reporting Layer
+title: GreenPlanetMart Executive Reporting
 ---
 
-# GreenPlanetMart Reporting Layer
+# GreenPlanetMart Executive Reporting
 
-This Evidence app translates the PoC marts into report pages aligned to the research areas in the project brief: supply chain management, business analytics, and operational efficiency.
+This reporting experience is designed for business users who need a quick view of stock exposure, sales performance, supplier reliability, and delivery execution.
 
-> Reporting approach: the report layer uses the DuckDB marts as its single source of truth, deduplicates repeated transactional rows back to business grain before aggregation, and keeps the pricing use case visible even though the pricing mart is currently empty.
+Each page focuses on a practical management question and highlights where attention, follow-up, or action is most likely needed.
 
 ```sql readiness_overview
 select
-    sum(case when status = 'active' then 1 else 0 end) as active_use_cases,
-    count(distinct research_area) as research_areas_covered,
-    sum(case when status = 'blocked' then 1 else 0 end) as constrained_use_cases
+    count(*) as dashboard_pages,
+    count(distinct research_area) as business_focus_areas,
+    count(distinct use_case) as key_management_views
 from greenplanetmart.reporting_readiness
 ```
 
 <Grid cols={3}>
-    <BigValue data={readiness_overview} value="active_use_cases" title="Active Use Cases" />
-    <BigValue data={readiness_overview} value="research_areas_covered" title="Research Areas Covered" />
-    <BigValue data={readiness_overview} value="constrained_use_cases" title="Constrained Use Cases" />
+    <BigValue data={readiness_overview} value="dashboard_pages" title="Dashboard Pages" />
+    <BigValue data={readiness_overview} value="business_focus_areas" title="Business Focus Areas" />
+    <BigValue data={readiness_overview} value="key_management_views" title="Management Views" />
 </Grid>
 
-## Use Case Readiness
+## Dashboard Overview
 
 ```sql readiness_detail
-select *
+select
+    research_area,
+    use_case,
+    analytical_scope,
+    reporting_note
 from greenplanetmart.reporting_readiness
 order by research_area, use_case
 ```
@@ -38,10 +42,9 @@ order by research_area, use_case
 - [Sales Performance](/sales)
 - [Procurement Performance](/procurement)
 - [Order Fulfillment](/fulfillment)
-- [Pricing Coverage](/pricing)
 
-## Interpretation Notes
+## How To Use The Dashboards
 
-- Inventory is modeled as a current-state snapshot rather than a stock-movement history.
-- Sales, procurement, and fulfillment metrics are intentionally aggregated from deduplicated business grain because the ERP extract contains repeated transactional rows.
-- Unknown members and unmapped joins are preserved so the report layer stays consistent with the implementation narrative around real-world source quality constraints.
+- Use the inventory view to identify where stock is concentrated and where availability gaps may affect service.
+- Use the sales view to understand which customers, products, and regions contribute the most billed revenue.
+- Use the procurement and fulfillment views to spot supplier delays, open commitments, and customer orders that need intervention.

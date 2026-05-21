@@ -1,6 +1,6 @@
 # GreenPlanetMart Evidence Reports
 
-This directory contains the reporting layer for the GreenPlanetMart PoC. The pages are aligned to the reporting use cases and research areas defined in the project report notes:
+This directory contains the business-facing reporting layer for the GreenPlanetMart PoC. The pages are aligned to the reporting use cases and research areas defined in the project report notes:
 
 - supply chain management
 - business analytics
@@ -12,7 +12,6 @@ This directory contains the reporting layer for the GreenPlanetMart PoC. The pag
 - `Sales Performance` answers the revenue by customer, product, and region use case.
 - `Procurement Performance` answers the supplier reliability and open commitment use case.
 - `Order Fulfillment` answers the delivery timeliness and bottleneck use case.
-- `Pricing Coverage` keeps the pricing use case visible, but documents that `fct_sales_pricing` currently has no rows in the mart.
 
 ## Project Structure
 
@@ -33,6 +32,6 @@ npm run dev
 
 ## Reporting Design Notes
 
-- Reporting queries deduplicate repeated ERP extract rows back to business grain before aggregation.
-- Sales, procurement, and fulfillment pages use the most recent available operational window instead of the full historical range, which avoids old outliers dominating the visuals.
-- Unknown or unmapped members are preserved so the report remains consistent with the data-integration narrative in the written project report.
+- The dashboards are written for business users and focus on commercial, supply chain, and service decisions.
+- Inventory is presented as a current-position view, which makes it suitable for stock visibility and availability reviews.
+- Procurement values should be compared within the same currency, and procurement quantities should be interpreted within the same unit of measure.

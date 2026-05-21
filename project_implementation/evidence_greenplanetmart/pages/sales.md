@@ -4,9 +4,9 @@ title: Sales Performance
 
 # Sales Performance by Customer, Product, and Region
 
-This page answers the business analytics question: which customers, materials, and sales organizations generate the most billed revenue over time?
+This page shows where billed revenue is coming from and where commercial momentum is strongest across customers, products, and sales organizations.
 
-> Use case scope: the report uses billing-item facts deduplicated to business grain and limits the trend window to the most recent 15 months available in the mart so that old historical outliers do not dominate the visuals.
+Use it to identify the accounts that matter most, the materials driving volume, and the parts of the sales organization carrying the business.
 
 ```sql sales_kpis
 select
@@ -47,7 +47,7 @@ order by billed_net_value desc
 limit 15
 ```
 
-## Top Customers
+## Highest-Value Customers
 
 <Grid cols={2}>
     <BarChart data={sales_top_customers} x="customer_name" y="billed_net_value" />
@@ -66,7 +66,7 @@ order by billed_net_value desc
 limit 20
 ```
 
-## Top Materials
+## Best-Performing Materials
 
 <DataTable data={sales_top_materials} />
 

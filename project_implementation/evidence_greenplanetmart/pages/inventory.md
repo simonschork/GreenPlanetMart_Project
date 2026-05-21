@@ -4,9 +4,9 @@ title: Inventory Position
 
 # Inventory Position by Plant, Storage Location, and Material
 
-This page addresses the supply chain question: where is stock currently held, and which materials are overstocked, inactive, or missing at relevant locations?
+This page shows where inventory is currently sitting and where stock imbalances may create either working-capital pressure or service risk.
 
-> Use case scope: the page uses `fct_inventory_snapshot` at `material x plant x storage_location` grain. Because the source is a snapshot extract, the analysis shows current position only and not stock movement history.
+Use it to see which plants hold the most stock, which material groups dominate the portfolio, and where empty positions may need attention.
 
 ```sql inventory_kpis
 select
@@ -21,6 +21,8 @@ from greenplanetmart.inventory_positions
     <BigValue data={inventory_kpis} value="stock_positions" title="Stock Positions" />
     <BigValue data={inventory_kpis} value="zero_stock_positions" title="Zero-Stock Positions" />
 </Grid>
+
+The inventory view reflects the current stock position, which makes it best suited for availability and concentration decisions.
 
 ## Stock Concentration by Plant
 
@@ -51,7 +53,7 @@ order by unrestricted_stock_qty desc
 limit 15
 ```
 
-## Material Group Mix
+## Inventory Mix by Material Group
 
 <Grid cols={2}>
     <BarChart data={inventory_material_groups} x="material_group" y="unrestricted_stock_qty" />
