@@ -46,6 +46,7 @@ declare module '$env/static/private' {
 	export const COLOR: string;
 	export const npm_config_noproxy: string;
 	export const npm_config_local_prefix: string;
+	export const COPILOT_DEBUG_NONCE: string;
 	export const USER: string;
 	export const COMMAND_MODE: string;
 	export const npm_config_globalconfig: string;
@@ -155,6 +156,7 @@ declare module '$env/dynamic/private' {
 		COLOR: string;
 		npm_config_noproxy: string;
 		npm_config_local_prefix: string;
+		COPILOT_DEBUG_NONCE: string;
 		USER: string;
 		COMMAND_MODE: string;
 		npm_config_globalconfig: string;
