@@ -29,15 +29,6 @@ with observed_plants as (
     select distinct
         client_id,
         plant_id
-    from {{ ref('int_sales_pricing_conditions') }}
-    where plant_id is not null
-      and plant_id != ''
-
-    union
-
-    select distinct
-        client_id,
-        plant_id
     from {{ ref('int_order_fulfillment') }}
     where plant_id is not null
       and plant_id != ''

@@ -1,0 +1,680 @@
+erDiagram
+  "MODEL.GREENPLANETMART.DIM_CUSTOMER" {
+    varchar customer_key
+    varchar client_id
+    varchar customer_id
+    varchar customer_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar industry_code
+    varchar account_group
+    varchar company_group_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_DATE" {
+    integer date_key
+    timestamp calendar_date
+    integer calendar_year
+    integer calendar_month
+    integer calendar_day
+    varchar year_month
+    integer iso_week_of_year
+    varchar day_name
+    varchar month_name
+    boolean is_weekend
+  }
+  "MODEL.GREENPLANETMART.DIM_DISTRIBUTION_CHANNEL" {
+    varchar distribution_channel_key
+    varchar client_id
+    varchar distribution_channel_id
+    varchar distribution_channel_name
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_MATERIAL" {
+    varchar material_key
+    varchar client_id
+    varchar material_id
+    varchar material_name
+    varchar material_type
+    varchar material_group
+    varchar base_unit
+    varchar division
+    double gross_weight
+    double net_weight
+    varchar weight_unit
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_PLANT" {
+    varchar plant_key
+    varchar client_id
+    varchar plant_id
+    varchar plant_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar shipping_point_id
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_PRICING_CONDITION_TYPE" {
+    varchar pricing_condition_type_key
+    varchar client_id
+    varchar condition_type
+    varchar condition_application
+    varchar calculation_type
+    varchar condition_category
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_SALES_ORG" {
+    varchar sales_org_key
+    varchar client_id
+    varchar sales_organization_id
+    varchar sales_organization_name
+    varchar default_currency
+    varchar company_code
+    varchar purchasing_organization_id
+    varchar default_plant_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION" {
+    varchar storage_location_key
+    varchar client_id
+    varchar plant_id
+    varchar plant_key
+    varchar storage_location_id
+  }
+  "MODEL.GREENPLANETMART.DIM_SUPPLIER" {
+    varchar supplier_key
+    varchar client_id
+    varchar supplier_id
+    varchar supplier_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar industry_code
+    varchar account_group
+    varchar company_group_id
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" {
+    integer snapshot_date_key
+    date snapshot_date
+    varchar material_key
+    varchar plant_key
+    varchar storage_location_key
+    double unrestricted_stock_qty
+    double stock_in_transfer_qty
+    double quality_inspection_qty
+    double restricted_use_qty
+    double blocked_stock_qty
+    double returns_qty
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" {
+    integer order_date_key
+    integer requested_delivery_date_key
+    integer actual_delivery_date_key
+    date order_date
+    date requested_delivery_date
+    date actual_delivery_date
+    varchar customer_key
+    varchar material_key
+    varchar sales_org_key
+    varchar distribution_channel_key
+    varchar plant_key
+    varchar storage_location_key
+    varchar sales_order_id
+    varchar sales_order_item_id
+    varchar latest_delivery_document_id
+    varchar sales_document_type
+    varchar document_currency
+    varchar division
+    varchar shipping_point_id
+    varchar sales_unit
+    double ordered_quantity
+    double scheduled_quantity
+    double confirmed_quantity
+    double delivered_quantity
+    double open_quantity
+    bigint delivery_delay_days
+    boolean is_on_time_delivery
+    boolean is_fully_delivered
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" {
+    integer purchase_order_date_key
+    integer planned_delivery_date_key
+    date purchase_order_date
+    date planned_delivery_date
+    varchar supplier_key
+    varchar material_key
+    varchar plant_key
+    varchar storage_location_key
+    varchar purchase_order_id
+    varchar purchase_order_item_id
+    varchar schedule_line_id
+    varchar company_code
+    varchar purchasing_document_type
+    varchar purchasing_organization_id
+    varchar purchasing_group_id
+    varchar document_currency
+    varchar incoterm_part_1
+    varchar incoterm_part_2
+    varchar order_unit
+    double net_price
+    double price_unit
+    double scheduled_quantity
+    double received_quantity
+    double open_quantity
+    double scheduled_net_value
+    integer goods_receipt_processing_days
+    varchar delivery_completed_flag
+    varchar goods_receipt_expected_flag
+    varchar returns_item_flag
+    boolean is_overdue
+    boolean is_fully_received
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" {
+    integer billing_date_key
+    date billing_date
+    varchar customer_key
+    varchar material_key
+    varchar sales_org_key
+    varchar distribution_channel_key
+    varchar plant_key
+    varchar storage_location_key
+    varchar billing_document_id
+    varchar billing_item_id
+    varchar document_currency
+    varchar sales_group_id
+    varchar sales_office_id
+    varchar shipping_point_id
+    double billed_quantity
+    varchar sales_unit
+    double billed_net_value
+    double billed_gross_value
+    double net_weight
+    varchar weight_unit
+    varchar reference_document_id
+    varchar reference_document_item_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" {
+    integer billing_date_key
+    date billing_date
+    varchar customer_key
+    varchar material_key
+    varchar sales_org_key
+    varchar distribution_channel_key
+    varchar plant_key
+    varchar storage_location_key
+    varchar pricing_condition_type_key
+    varchar billing_document_id
+    varchar billing_item_id
+    integer condition_step_number
+    integer condition_counter
+    varchar document_currency
+    varchar condition_currency
+    varchar condition_application
+    varchar condition_type
+    varchar calculation_type
+    varchar condition_category
+    varchar condition_amount_class
+    double condition_base_amount
+    double condition_rate
+    double condition_amount
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.INT_INVENTORY_CURRENT" {
+    varchar client_id
+    varchar material_id
+    varchar material_name
+    varchar material_type
+    varchar material_group
+    varchar base_unit
+    varchar plant_id
+    varchar plant_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar storage_location_id
+    double unrestricted_stock_qty
+    double stock_in_transfer_qty
+    double quality_inspection_qty
+    double restricted_use_qty
+    double blocked_stock_qty
+    double returns_qty
+    date created_on
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.INT_ORDER_FULFILLMENT" {
+    varchar client_id
+    varchar sales_order_id
+    varchar sales_order_item_id
+    date order_date
+    date requested_delivery_date
+    date first_actual_delivery_date
+    date actual_delivery_date
+    varchar sales_document_type
+    varchar document_currency
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar division
+    varchar customer_id
+    varchar material_id
+    varchar item_description
+    varchar plant_id
+    varchar storage_location_id
+    varchar shipping_point_id
+    varchar sales_unit
+    double ordered_quantity
+    double scheduled_quantity
+    double confirmed_quantity
+    double delivered_quantity
+    double open_quantity
+    bigint delivery_delay_days
+    boolean is_on_time_delivery
+    boolean is_fully_delivered
+    varchar latest_delivery_document_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.INT_PROCUREMENT_SCHEDULE_LINES" {
+    varchar client_id
+    varchar purchase_order_id
+    varchar purchase_order_item_id
+    varchar schedule_line_id
+    date purchase_order_date
+    date planned_delivery_date
+    varchar company_code
+    varchar purchasing_document_type
+    varchar purchasing_organization_id
+    varchar purchasing_group_id
+    varchar document_currency
+    varchar incoterm_part_1
+    varchar incoterm_part_2
+    varchar supplier_id
+    varchar supplier_name
+    varchar supplier_country_code
+    varchar supplier_region_code
+    varchar supplier_city_name
+    varchar material_id
+    varchar item_description
+    varchar plant_id
+    varchar storage_location_id
+    varchar order_unit
+    double net_price
+    double price_unit
+    double item_net_value
+    integer goods_receipt_processing_days
+    varchar delivery_completed_flag
+    varchar goods_receipt_expected_flag
+    varchar returns_item_flag
+    double scheduled_quantity
+    double received_quantity
+    double open_quantity
+    double scheduled_net_value
+    boolean is_overdue
+    boolean is_fully_received
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.INT_SALES_BILLING_ITEMS" {
+    varchar client_id
+    varchar billing_document_id
+    varchar billing_item_id
+    date billing_date
+    varchar document_currency
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar division
+    varchar customer_id
+    varchar customer_name
+    varchar customer_country_code
+    varchar customer_region_code
+    varchar customer_city_name
+    varchar material_id
+    varchar billing_item_description
+    varchar plant_id
+    varchar storage_location_id
+    varchar shipping_point_id
+    varchar sales_group_id
+    varchar sales_office_id
+    double billed_quantity
+    varchar sales_unit
+    double billed_net_value
+    double billed_gross_value
+    double net_weight
+    varchar weight_unit
+    varchar reference_document_id
+    varchar reference_document_item_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.INT_SALES_PRICING_CONDITIONS" {
+    varchar client_id
+    varchar billing_document_id
+    varchar billing_item_id
+    date billing_date
+    varchar customer_id
+    varchar material_id
+    varchar plant_id
+    varchar storage_location_id
+    varchar sales_group_id
+    varchar sales_office_id
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar document_currency
+    varchar billing_item_description
+    varchar reference_document_id
+    varchar reference_document_item_id
+    varchar condition_application
+    varchar condition_type
+    date condition_date
+    varchar calculation_type
+    integer condition_step_number
+    integer condition_counter
+    varchar condition_category
+    varchar condition_currency
+    double condition_base_amount
+    double condition_rate
+    double condition_amount
+    varchar condition_amount_class
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__EKET" {
+    varchar client_id
+    varchar purchase_order_id
+    varchar purchase_order_item_id
+    varchar schedule_line_id
+    date planned_delivery_date
+    double scheduled_quantity
+    double received_quantity
+    date goods_issue_date
+    date goods_receipt_date
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__EKKO" {
+    varchar client_id
+    varchar purchase_order_id
+    varchar company_code
+    varchar purchasing_document_type
+    varchar supplier_id
+    varchar purchasing_organization_id
+    varchar purchasing_group_id
+    varchar document_currency
+    date purchase_order_date
+    varchar incoterm_part_1
+    varchar incoterm_part_2
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__EKPO" {
+    varchar client_id
+    varchar purchase_order_id
+    varchar purchase_order_item_id
+    varchar item_description
+    varchar material_id
+    varchar plant_id
+    varchar storage_location_id
+    double ordered_quantity
+    varchar order_unit
+    double net_price
+    double price_unit
+    double item_net_value
+    integer goods_receipt_processing_days
+    varchar delivery_completed_flag
+    varchar goods_receipt_expected_flag
+    varchar returns_item_flag
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__KNA1" {
+    varchar client_id
+    varchar customer_id
+    varchar customer_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar industry_code
+    varchar account_group
+    varchar company_group_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__KONV" {
+    varchar client_id
+    varchar pricing_document_id
+    varchar pricing_item_id
+    integer pricing_item_number
+    integer condition_step_number
+    integer condition_counter
+    varchar condition_application
+    varchar condition_type
+    date condition_date
+    varchar calculation_type
+    double condition_base_amount
+    double condition_rate
+    varchar condition_currency
+    double condition_amount
+    varchar condition_category
+    varchar source_recordstamp
+    varchar operation_flag
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__LFA1" {
+    varchar client_id
+    varchar supplier_id
+    varchar supplier_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar industry_code
+    varchar account_group
+    varchar company_group_id
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__LIKP" {
+    varchar client_id
+    varchar delivery_document_id
+    date delivery_created_date
+    date planned_delivery_date
+    date planned_goods_issue_date
+    date actual_goods_issue_date
+    varchar shipping_point_id
+    varchar sales_organization_id
+    varchar ship_to_customer_id
+    varchar sold_to_customer_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__LIPS" {
+    varchar client_id
+    varchar delivery_document_id
+    varchar delivery_item_id
+    varchar reference_sales_order_id
+    varchar reference_sales_order_item_id
+    varchar material_id
+    varchar item_description
+    varchar plant_id
+    varchar storage_location_id
+    double delivered_quantity
+    varchar sales_unit
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__MAKT" {
+    varchar client_id
+    varchar material_id
+    varchar language_code
+    varchar material_name
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__MARA" {
+    varchar client_id
+    varchar material_id
+    varchar material_type
+    varchar material_group
+    varchar base_unit
+    varchar division
+    double gross_weight
+    double net_weight
+    varchar weight_unit
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__MARD" {
+    varchar client_id
+    varchar material_id
+    varchar plant_id
+    varchar storage_location_id
+    double unrestricted_stock_qty
+    double stock_in_transfer_qty
+    double quality_inspection_qty
+    double restricted_use_qty
+    double blocked_stock_qty
+    double returns_qty
+    date created_on
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__T001W" {
+    varchar client_id
+    varchar plant_id
+    varchar plant_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar shipping_point_id
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__TVKO" {
+    varchar client_id
+    varchar sales_organization_id
+    varchar default_currency
+    varchar company_code
+    varchar purchasing_organization_id
+    varchar default_plant_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__TVKOT" {
+    varchar client_id
+    varchar language_code
+    varchar sales_organization_id
+    varchar sales_organization_name
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__TVTW" {
+    varchar client_id
+    varchar distribution_channel_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__TVTWT" {
+    varchar client_id
+    varchar language_code
+    varchar distribution_channel_id
+    varchar distribution_channel_name
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__VBAK" {
+    varchar client_id
+    varchar sales_order_id
+    date order_date
+    date requested_header_delivery_date
+    varchar sales_document_type
+    varchar document_currency
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar division
+    varchar customer_id
+    double order_net_value
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__VBAP" {
+    varchar client_id
+    varchar sales_order_id
+    varchar sales_order_item_id
+    varchar material_id
+    varchar item_description
+    varchar plant_id
+    varchar storage_location_id
+    varchar shipping_point_id
+    double ordered_quantity
+    varchar sales_unit
+    double item_net_value
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__VBEP" {
+    varchar client_id
+    varchar sales_order_id
+    varchar sales_order_item_id
+    varchar schedule_line_id
+    date requested_delivery_date
+    double scheduled_quantity
+    double confirmed_quantity
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__VBRK" {
+    varchar client_id
+    varchar billing_document_id
+    varchar billing_type
+    varchar pricing_document_id
+    date billing_date
+    varchar document_currency
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar division
+    varchar sold_to_customer_id
+    varchar payer_customer_id
+    double billing_net_value
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.STG_SAP__VBRP" {
+    varchar client_id
+    varchar billing_document_id
+    varchar billing_item_id
+    varchar material_id
+    varchar billing_item_description
+    varchar plant_id
+    varchar storage_location_id
+    varchar shipping_point_id
+    double billed_quantity
+    varchar sales_unit
+    double billed_net_value
+    double billed_gross_value
+    double net_weight
+    varchar weight_unit
+    varchar reference_document_id
+    varchar reference_document_item_id
+    varchar sales_group_id
+    varchar sales_office_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--snapshot_date_key
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--actual_delivery_date_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_CUSTOMER": customer_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_DISTRIBUTION_CHANNEL": distribution_channel_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--order_date_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--requested_delivery_date_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_SALES_ORG": sales_org_key
+  "MODEL.GREENPLANETMART.FCT_ORDER_FULFILLMENT" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--planned_delivery_date_key
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--purchase_order_date_key
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key
+  "MODEL.GREENPLANETMART.FCT_PROCUREMENT_SCHEDULE" }|--|| "MODEL.GREENPLANETMART.DIM_SUPPLIER": supplier_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--billing_date_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_CUSTOMER": customer_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_DISTRIBUTION_CHANNEL": distribution_channel_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_SALES_ORG": sales_org_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--billing_date_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_CUSTOMER": customer_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_DISTRIBUTION_CHANNEL": distribution_channel_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_PRICING_CONDITION_TYPE": pricing_condition_type_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_SALES_ORG": sales_org_key
+  "MODEL.GREENPLANETMART.FCT_SALES_PRICING" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key

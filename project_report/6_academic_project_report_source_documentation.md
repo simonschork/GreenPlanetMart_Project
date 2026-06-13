@@ -625,7 +625,7 @@ The project achieved its main objective by delivering:
 
 - a working DuckDB warehouse with layered schemas
 - a dbt transformation project with staging, intermediate, and mart layers
-- conformed dimensions and fact tables across five analytical domains
+- conformed dimensions and fact tables across four analytical domains
 - Evidence reporting pages for the selected use cases
 - validated corrections for major KPI and fanout issues
 

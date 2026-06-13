@@ -15,12 +15,6 @@ with observed_dates as (
 
     union all
 
-    select billing_date as calendar_date
-    from {{ ref('int_sales_pricing_conditions') }}
-    where billing_date is not null
-
-    union all
-
     select order_date as calendar_date
     from {{ ref('int_order_fulfillment') }}
     where order_date is not null

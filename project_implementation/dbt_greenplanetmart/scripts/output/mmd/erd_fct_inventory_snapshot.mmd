@@ -1,0 +1,65 @@
+erDiagram
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" {
+    integer snapshot_date_key
+    date snapshot_date
+    varchar material_key
+    varchar plant_key
+    varchar storage_location_key
+    double unrestricted_stock_qty
+    double stock_in_transfer_qty
+    double quality_inspection_qty
+    double restricted_use_qty
+    double blocked_stock_qty
+    double returns_qty
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_DATE" {
+    integer date_key
+    timestamp calendar_date
+    integer calendar_year
+    integer calendar_month
+    integer calendar_day
+    varchar year_month
+    integer iso_week_of_year
+    varchar day_name
+    varchar month_name
+    boolean is_weekend
+  }
+  "MODEL.GREENPLANETMART.DIM_MATERIAL" {
+    varchar material_key
+    varchar client_id
+    varchar material_id
+    varchar material_name
+    varchar material_type
+    varchar material_group
+    varchar base_unit
+    varchar division
+    double gross_weight
+    double net_weight
+    varchar weight_unit
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_PLANT" {
+    varchar plant_key
+    varchar client_id
+    varchar plant_id
+    varchar plant_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar shipping_point_id
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION" {
+    varchar storage_location_key
+    varchar client_id
+    varchar plant_id
+    varchar plant_key
+    varchar storage_location_id
+  }
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--snapshot_date_key
+  "MODEL.GREENPLANETMART.FCT_INVENTORY_SNAPSHOT" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key

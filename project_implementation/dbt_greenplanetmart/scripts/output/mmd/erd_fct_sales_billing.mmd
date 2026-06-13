@@ -1,0 +1,110 @@
+erDiagram
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" {
+    integer billing_date_key
+    date billing_date
+    varchar customer_key
+    varchar material_key
+    varchar sales_org_key
+    varchar distribution_channel_key
+    varchar plant_key
+    varchar storage_location_key
+    varchar billing_document_id
+    varchar billing_item_id
+    varchar document_currency
+    varchar sales_group_id
+    varchar sales_office_id
+    varchar shipping_point_id
+    double billed_quantity
+    varchar sales_unit
+    double billed_net_value
+    double billed_gross_value
+    double net_weight
+    varchar weight_unit
+    varchar reference_document_id
+    varchar reference_document_item_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_CUSTOMER" {
+    varchar customer_key
+    varchar client_id
+    varchar customer_id
+    varchar customer_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar industry_code
+    varchar account_group
+    varchar company_group_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_DATE" {
+    integer date_key
+    timestamp calendar_date
+    integer calendar_year
+    integer calendar_month
+    integer calendar_day
+    varchar year_month
+    integer iso_week_of_year
+    varchar day_name
+    varchar month_name
+    boolean is_weekend
+  }
+  "MODEL.GREENPLANETMART.DIM_DISTRIBUTION_CHANNEL" {
+    varchar distribution_channel_key
+    varchar client_id
+    varchar distribution_channel_id
+    varchar distribution_channel_name
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_MATERIAL" {
+    varchar material_key
+    varchar client_id
+    varchar material_id
+    varchar material_name
+    varchar material_type
+    varchar material_group
+    varchar base_unit
+    varchar division
+    double gross_weight
+    double net_weight
+    varchar weight_unit
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_PLANT" {
+    varchar plant_key
+    varchar client_id
+    varchar plant_id
+    varchar plant_name
+    varchar country_code
+    varchar region_code
+    varchar city_name
+    varchar sales_organization_id
+    varchar distribution_channel_id
+    varchar shipping_point_id
+    timestamp-with-time-zone source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_SALES_ORG" {
+    varchar sales_org_key
+    varchar client_id
+    varchar sales_organization_id
+    varchar sales_organization_name
+    varchar default_currency
+    varchar company_code
+    varchar purchasing_organization_id
+    varchar default_plant_id
+    varchar source_recordstamp
+  }
+  "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION" {
+    varchar storage_location_key
+    varchar client_id
+    varchar plant_id
+    varchar plant_key
+    varchar storage_location_id
+  }
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_DATE": date_key--billing_date_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_CUSTOMER": customer_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_DISTRIBUTION_CHANNEL": distribution_channel_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_MATERIAL": material_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_PLANT": plant_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_SALES_ORG": sales_org_key
+  "MODEL.GREENPLANETMART.FCT_SALES_BILLING" }|--|| "MODEL.GREENPLANETMART.DIM_STORAGE_LOCATION": storage_location_key

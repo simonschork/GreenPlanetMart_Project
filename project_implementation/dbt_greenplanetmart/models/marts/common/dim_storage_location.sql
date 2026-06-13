@@ -37,15 +37,6 @@ with observed_storage_locations as (
     where storage_location_id is not null
       and storage_location_id != ''
 
-    union
-
-    select distinct
-        client_id,
-        plant_id,
-        storage_location_id
-    from {{ ref('int_sales_pricing_conditions') }}
-    where storage_location_id is not null
-      and storage_location_id != ''
 )
 
 select distinct

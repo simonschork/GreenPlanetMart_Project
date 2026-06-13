@@ -29,15 +29,6 @@ with observed_materials as (
     select distinct
         client_id,
         material_id
-    from {{ ref('int_sales_pricing_conditions') }}
-    where material_id is not null
-      and material_id != ''
-
-    union
-
-    select distinct
-        client_id,
-        material_id
     from {{ ref('int_order_fulfillment') }}
     where material_id is not null
       and material_id != ''

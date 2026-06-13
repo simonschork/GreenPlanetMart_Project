@@ -49,14 +49,6 @@ models:
           - not_null
           - unique
 
-  - name: dim_pricing_condition_type
-    description: Conformed pricing condition type dimension for sales pricing analysis.
-    columns:
-      - name: pricing_condition_type_key
-        tests:
-          - not_null
-          - unique
-
   - name: dim_distribution_channel
     description: Conformed distribution channel dimension.
     columns:
@@ -142,64 +134,6 @@ models:
               arguments:
                 to: ref('dim_distribution_channel')
                 field: distribution_channel_key
-      - name: plant_key
-        tests:
-          - relationships:
-              arguments:
-                to: ref('dim_plant')
-                field: plant_key
-      - name: storage_location_key
-        tests:
-          - relationships:
-              arguments:
-                to: ref('dim_storage_location')
-                field: storage_location_key
-
-  - name: fct_sales_pricing
-    description: Billing item pricing fact table at billing item by pricing condition type grain.
-    columns:
-      - name: billing_date_key
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_date')
-                field: date_key
-      - name: customer_key
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_customer')
-                field: customer_key
-      - name: material_key
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_material')
-                field: material_key
-      - name: sales_org_key
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_sales_org')
-                field: sales_org_key
-      - name: distribution_channel_key
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_distribution_channel')
-                field: distribution_channel_key
-      - name: pricing_condition_type_key
-        tests:
-          - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_pricing_condition_type')
-                field: pricing_condition_type_key
       - name: plant_key
         tests:
           - relationships:

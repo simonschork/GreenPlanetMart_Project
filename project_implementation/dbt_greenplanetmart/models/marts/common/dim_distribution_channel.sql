@@ -20,15 +20,6 @@ with observed_channels as (
     select distinct
         client_id,
         distribution_channel_id
-    from {{ ref('int_sales_pricing_conditions') }}
-    where distribution_channel_id is not null
-      and distribution_channel_id != ''
-
-    union
-
-    select distinct
-        client_id,
-        distribution_channel_id
     from {{ ref('int_order_fulfillment') }}
     where distribution_channel_id is not null
       and distribution_channel_id != ''

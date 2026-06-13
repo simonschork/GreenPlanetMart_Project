@@ -70,7 +70,6 @@ The implementation converged on a conformed-dimension approach:
 - `dim_storage_location`
 - `dim_sales_org`
 - `dim_distribution_channel`
-- `dim_pricing_condition_type`
 
 ### Implemented fact tables
 
@@ -78,7 +77,6 @@ The implementation converged on a conformed-dimension approach:
 - `fct_sales_billing`
 - `fct_procurement_schedule`
 - `fct_order_fulfillment`
-- `fct_sales_pricing`
 
 ### Why this model is strong for the brief
 
@@ -111,11 +109,6 @@ It also matches standard BI practice more closely than a single flattened table 
 
 - fact: `fct_order_fulfillment`
 - dimensions: `dim_customer`, `dim_material`, `dim_plant`, `dim_sales_org`, `dim_distribution_channel`, `dim_date`
-
-### 5. Sales Price, Discount, and Billing Quality Analysis
-
-- fact: `fct_sales_pricing`
-- dimensions: `dim_customer`, `dim_material`, `dim_sales_org`, `dim_distribution_channel`, `dim_pricing_condition_type`, `dim_date`
 
 ## 4. Data Integration Learnings
 
@@ -279,7 +272,6 @@ Examples:
 - `int_sales_billing_items`
 - `int_procurement_schedule_lines`
 - `int_order_fulfillment`
-- `int_sales_pricing_conditions`
 
 Main benefit:
 
@@ -342,17 +334,6 @@ Rationale:
 - cleaner for requested vs delivered performance than pure delivery-item grain
 - easier to communicate in a business report
 
-### Pricing
-
-`fct_sales_pricing`
-
-- grain: `billing_item x pricing_condition_type`
-
-Rationale:
-
-- necessary to analyze discounts, surcharges, and pricing composition
-- retains detail without exploding to a less interpretable raw condition-record level
-
 ## 7. Data Quality Problems and Solutions
 
 ### 1. Duplicate business keys in source master data
@@ -391,7 +372,6 @@ Used in:
 - `dim_plant`
 - `dim_sales_org`
 - `dim_distribution_channel`
-- `dim_pricing_condition_type`
 
 Report relevance:
 
@@ -476,7 +456,7 @@ Problem:
 Mitigation:
 
 - unknown-member dimension pattern
-- fallback logic in fulfillment and pricing models
+- fallback logic in fulfillment models
 
 ### Challenge: choosing the right grain
 
@@ -545,7 +525,7 @@ A strong report narrative would be:
 2. a layered DuckDB + dbt architecture was chosen to create a reproducible analytical pipeline
 3. the implementation started with raw ingestion and evolved into a conformed star schema
 4. repeated testing exposed realistic data-quality issues that required design adaptation
-5. the final result is a PoC analytical warehouse that supports inventory, sales, procurement, fulfillment, and pricing reports
+5. the final result is a PoC analytical warehouse that supports inventory, sales, procurement, and fulfillment reports
 
 ## 14. Current State of Implementation
 
@@ -559,7 +539,6 @@ A strong report narrative would be:
 - `dim_storage_location`
 - `dim_sales_org`
 - `dim_distribution_channel`
-- `dim_pricing_condition_type`
 
 ### Implemented facts
 
@@ -567,8 +546,7 @@ A strong report narrative would be:
 - `fct_sales_billing`
 - `fct_procurement_schedule`
 - `fct_order_fulfillment`
-- `fct_sales_pricing`
 
 ### Final outcome
 
-The five planned analytical slices were implemented successfully and validated with dbt tests. The resulting warehouse is technically coherent, appropriately scoped for a PoC, and directly aligned with the reporting requirements in the project brief.
+The four planned analytical slices were implemented successfully and validated with dbt tests. The resulting warehouse is technically coherent, appropriately scoped for a PoC, and directly aligned with the reporting requirements in the project brief.

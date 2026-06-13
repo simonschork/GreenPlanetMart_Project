@@ -23,7 +23,6 @@ sources:
       - name: ekbe
       - name: kna1
       - name: lfa1
-      - name: konv
       - name: tvko
       - name: tvkot
       - name: tvtw
@@ -46,8 +45,6 @@ models:
     description: Billing document header records.
   - name: stg_sap__vbrp
     description: Billing document item records.
-  - name: stg_sap__konv
-    description: Pricing condition records.
   - name: stg_sap__ekko
     description: Purchase order header records.
   - name: stg_sap__ekpo
@@ -78,7 +75,5 @@ models:
     description: Sales order items enriched with requested and actual delivery information.
   - name: int_procurement_schedule_lines
     description: Procurement schedule lines enriched with purchase order, material, plant, and supplier context.
-  - name: int_sales_pricing_conditions
-    description: Billing item pricing conditions enriched with customer, product, and sales organization context.
   - name: int_sales_billing_items
     description: Billing item dataset enriched with header, customer, and sales organization context.

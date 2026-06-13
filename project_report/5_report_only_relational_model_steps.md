@@ -29,9 +29,9 @@ Insert the following content in the report section on technical architecture and
 
 ## Ready-to-Use Relational Model Narrative
 
-The GreenPlanetMart solution is based on a layered data architecture that starts from operational SAP-style relational source entities and ends in a dimensional BI model. Before the star schema is introduced, the underlying source structure can be understood as a normalized relational model consisting of master-data tables, document-header tables, document-item tables, schedule-line tables, delivery tables, and pricing-condition tables.
+The GreenPlanetMart solution is based on a layered data architecture that starts from operational SAP-style relational source entities and ends in a dimensional BI model. Before the star schema is introduced, the underlying source structure can be understood as a normalized relational model consisting of master-data tables, document-header tables, document-item tables, schedule-line tables, and delivery tables.
 
-The master-data entities include materials, customers, suppliers, plants, sales organizations, and distribution channels. These entities provide reusable descriptive context for operational transactions. The transactional entities include inventory positions, sales orders, sales-order schedule lines, billing documents, billing items, purchase orders, purchase-order items, purchase-order schedule lines, delivery documents, and pricing conditions. In the source system, the structure is normalized because descriptive attributes are separated from transactional events and because business documents are split into headers, items, and schedule lines.
+The master-data entities include materials, customers, suppliers, plants, sales organizations, and distribution channels. These entities provide reusable descriptive context for operational transactions. The transactional entities include inventory positions, sales orders, sales-order schedule lines, billing documents, billing items, purchase orders, purchase-order items, purchase-order schedule lines, and delivery documents. In the source system, the structure is normalized because descriptive attributes are separated from transactional events and because business documents are split into headers, items, and schedule lines.
 
 This relational structure is preserved conceptually in the DuckDB and dbt pipeline. The raw schema stores the original source entities. The staging layer standardizes types and names. The intermediate layer resolves business joins and prepares reusable relational combinations such as billing items with customer context, order-fulfillment items with requested and actual delivery dates, and procurement schedule lines with supplier and material context. Only after this relational integration step does the project transform the data into conformed dimensions and fact tables for BI reporting.
 
@@ -43,7 +43,7 @@ Use the following table in the report.
 
 | Entity | Primary key | Foreign key(s) | Relationship/cardinality | Purpose |
 |---|---|---|---|---|
-| `mara` material master | `client_id + material_id` | none | one material can appear in many inventory, sales, procurement, and pricing rows | Stores core material attributes such as type, group, base unit, division, and weight fields. |
+| `mara` material master | `client_id + material_id` | none | one material can appear in many inventory, sales, procurement, and fulfillment rows | Stores core material attributes such as type, group, base unit, division, and weight fields. |
 | `makt` material text | `client_id + material_id + language_code` | `client_id + material_id -> mara` | many text rows per material because one material can have multiple language-dependent descriptions | Stores language-specific material descriptions. |
 | `kna1` customer master | `client_id + customer_id` | none | one customer can be referenced by many sales orders and billing documents | Stores descriptive customer attributes such as name, location, industry, and account group. |
 | `lfa1` supplier master | `client_id + supplier_id` | none | one supplier can be referenced by many purchase orders | Stores descriptive supplier attributes such as name, location, industry, and account group. |
@@ -59,7 +59,6 @@ Use the following table in the report.
 | `ekko` purchase order header | `client_id + purchase_order_id` | `supplier_id -> lfa1` | one purchase-order header to many purchase-order items | Stores purchase-order-level attributes such as supplier, organization, currency, and purchasing terms. |
 | `ekpo` purchase order item | `client_id + purchase_order_id + purchase_order_item_id` | `purchase_order_id -> ekko`, `material_id -> mara`, `plant_id -> t001w` | many items belong to one purchase-order header | Stores material, plant, quantity, and price information for procurement items. |
 | `eket` purchase order schedule line | `client_id + purchase_order_id + purchase_order_item_id + schedule_line_id` | `purchase_order_id + purchase_order_item_id -> ekpo` | one purchase-order item can have many schedule lines | Stores planned-delivery dates and schedule-line quantities for procurement. |
-| `konv` pricing condition | technical pricing-record key at source level; analytically resolved by `client_id + billing_document_id + billing_item_id + condition_type` | billing context via pricing or reference document linkage; condition type context by condition code | one billing item can have many pricing-condition rows | Stores discounts, surcharges, and other pricing-condition amounts used to explain billed value composition. |
 | `tvko` sales organization master | `client_id + sales_organization_id` | none | one sales organization can be referenced by many sales and billing documents | Stores sales-organization attributes such as default currency and organizational assignment. |
 | `tvtw` distribution channel master | `client_id + distribution_channel_id` | none | one distribution channel can be referenced by many sales and billing documents | Stores the distribution channel codes used in commercial transactions. |
 
@@ -75,7 +74,7 @@ Use the following explicit statements in the report:
 - One billing header can contain many billing items, but each billing item belongs to one billing header.
 - One purchase-order header can contain many purchase-order items, but each purchase-order item belongs to one purchase-order header.
 - One purchase-order item can contain many schedule lines, but each schedule line belongs to one purchase-order item.
-- One material can appear in many inventory, sales, procurement, fulfillment, and pricing rows.
+- One material can appear in many inventory, sales, procurement, and fulfillment rows.
 - One plant can appear in many inventory, sales, procurement, and fulfillment rows.
 - One supplier can be linked to many purchase orders, but each purchase-order header refers to one supplier.
 - One sales organization and one distribution channel can each be linked to many sales and billing documents.
@@ -99,10 +98,9 @@ Use the following table in the report.
 | `tvko` + `tvkot` plus observed sales-organization keys from sales and billing transactions | staging -> intermediate enrichment | `dim_sales_org` |
 | `tvtw` + `tvtwt` plus observed distribution-channel keys from sales and billing transactions | staging -> intermediate enrichment | `dim_distribution_channel` |
 | observed storage-location keys from inventory, sales, fulfillment, and procurement transactions | staging -> intermediate enrichment | `dim_storage_location` |
-| all observed transactional dates from inventory, sales, pricing, fulfillment, and procurement | staging -> intermediate enrichment | `dim_date` |
+| all observed transactional dates from inventory, sales, fulfillment, and procurement | staging -> intermediate enrichment | `dim_date` |
 | `mard` current inventory positions | intermediate | `fct_inventory_snapshot` |
 | `vbrk` + `vbrp` + customer and sales-structure enrichment | intermediate | `fct_sales_billing` |
-| `vbrk` + `vbrp` + `konv` + customer and sales-structure enrichment | intermediate | `fct_sales_pricing` |
 | `vbak` + `vbap` + `vbep` + `likp` + `lips` | intermediate | `fct_order_fulfillment` |
 | `ekko` + `ekpo` + `eket` + supplier enrichment | intermediate | `fct_procurement_schedule` |
 

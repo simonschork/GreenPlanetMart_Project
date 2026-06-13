@@ -20,15 +20,6 @@ with observed_sales_org as (
     select distinct
         client_id,
         sales_organization_id
-    from {{ ref('int_sales_pricing_conditions') }}
-    where sales_organization_id is not null
-      and sales_organization_id != ''
-
-    union
-
-    select distinct
-        client_id,
-        sales_organization_id
     from {{ ref('int_order_fulfillment') }}
     where sales_organization_id is not null
       and sales_organization_id != ''

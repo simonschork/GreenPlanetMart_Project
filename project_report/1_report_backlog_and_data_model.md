@@ -170,47 +170,6 @@ This is the strongest report for the operational efficiency requirement in the p
 
 One row per deliverable sales order item or per sales schedule line, depending on data completeness after profiling.
 
-## 5. Sales Price, Discount, and Billing Quality Analysis
-
-**Business question**  
-How much billed value is influenced by discounts, surcharges, and pricing conditions?
-
-**Why this report matters**  
-This adds analytical depth beyond simple sales totals and makes good use of pricing data in SAP.
-
-**Main source tables**
-
-- `vbak` for sales order header and pricing document number
-- `vbap` for sales order item
-- `vbrk` for billing header
-- `vbrp` for billing item
-- `konv` for pricing conditions
-- `kna1` for customer master
-- `mara` for material attributes
-- `makt` for material descriptions
-
-**Main KPIs**
-
-- gross value
-- net billed value
-- discount amount
-- surcharge amount
-- discount rate
-- pricing condition mix by customer
-- pricing condition mix by material
-
-**Suggested dimensions**
-
-- date
-- customer
-- material
-- sales organization
-- pricing condition type
-
-**Suggested grain**
-
-One row per billing item, with rolled-up pricing condition amounts, or one row per `billing_item x condition_type` for the detailed mart.
-
 ## Recommended Build Order
 
 The implementation should proceed in thin vertical slices:
@@ -219,35 +178,33 @@ The implementation should proceed in thin vertical slices:
 2. Sales Performance
 3. Procurement Performance
 4. Order Fulfillment
-5. Pricing and Discount Analysis
 
-This order starts with the least join-heavy model, establishes reusable dimensions, and postpones the pricing-condition complexity until the pipeline is stable.
+This order starts with the least join-heavy model and establishes reusable dimensions before moving into more complex cross-document fulfillment logic.
 
 ## Source-to-Report Mapping
 
-| Source table | Inventory | Sales | Procurement | Fulfillment | Pricing |
-|---|---|---|---|---|---|
-| `mard` | X |  |  |  |  |
-| `mara` | X | X | X |  | X |
-| `makt` | X | X | X | X | X |
-| `t001w` | X |  | X | X |  |
-| `vbak` |  | X |  | X | X |
-| `vbap` |  | X |  | X | X |
-| `vbep` |  |  |  | X |  |
-| `vbrk` |  | X |  |  | X |
-| `vbrp` |  | X |  |  | X |
-| `likp` |  |  |  | X |  |
-| `lips` |  |  |  | X |  |
-| `vbfa` |  |  |  | X |  |
-| `kna1` |  | X |  | X | X |
-| `ekko` |  |  | X |  |  |
-| `ekpo` |  |  | X |  |  |
-| `eket` |  |  | X |  |  |
-| `ekbe` |  |  | X |  |  |
-| `lfa1` |  |  | X |  |  |
-| `konv` |  |  |  |  | X |
-| `tvko` |  | X |  |  | X |
-| `tvtw` |  | X |  |  |  |
+| Source table | Inventory | Sales | Procurement | Fulfillment |
+|---|---|---|---|---|
+| `mard` | X |  |  |  |
+| `mara` | X | X | X |  |
+| `makt` | X | X | X | X |
+| `t001w` | X |  | X | X |
+| `vbak` |  | X |  | X |
+| `vbap` |  | X |  | X |
+| `vbep` |  |  |  | X |
+| `vbrk` |  | X |  |  |
+| `vbrp` |  | X |  |  |
+| `likp` |  |  |  | X |
+| `lips` |  |  |  | X |
+| `vbfa` |  |  |  | X |
+| `kna1` |  | X |  | X |
+| `ekko` |  |  | X |  |
+| `ekpo` |  |  | X |  |
+| `eket` |  |  | X |  |
+| `ekbe` |  |  | X |  |
+| `lfa1` |  |  | X |  |
+| `tvko` |  | X |  |  |
+| `tvtw` |  | X |  |  |
 
 ## First-Pass Star Schema
 
@@ -263,7 +220,6 @@ The BI layer should be centered around a shared set of conformed dimensions and 
 - `dim_storage_location`
 - `dim_sales_org`
 - `dim_distribution_channel`
-- `dim_pricing_condition_type`
 
 ### Fact tables
 
@@ -275,8 +231,6 @@ The BI layer should be centered around a shared set of conformed dimensions and 
   - grain: purchase order item schedule line
 - `fct_order_fulfillment`
   - grain: sales order item or schedule line
-- `fct_sales_pricing`
-  - grain: billing item or `billing_item x condition_type`
 
 ## Proposed dbt Model Layers
 
@@ -302,7 +256,6 @@ Clean, type-cast, and rename raw SAP tables:
 - `stg_sap__ekbe`
 - `stg_sap__kna1`
 - `stg_sap__lfa1`
-- `stg_sap__konv`
 
 ### Intermediate
 
@@ -316,7 +269,6 @@ Business-ready joins and reusable transformations:
 - `int_sales_order_items`
 - `int_procurement_schedule_lines`
 - `int_delivery_flow`
-- `int_pricing_conditions`
 
 ### Marts
 
@@ -330,12 +282,10 @@ Final analytical models for reporting:
 - `dim_storage_location`
 - `dim_sales_org`
 - `dim_distribution_channel`
-- `dim_pricing_condition_type`
 - `fct_inventory_snapshot`
 - `fct_sales_billing`
 - `fct_procurement_schedule`
 - `fct_order_fulfillment`
-- `fct_sales_pricing`
 
 ## Key Assumptions
 
@@ -347,7 +297,7 @@ Final analytical models for reporting:
 
 ## Immediate Next Steps
 
-1. Profile the 5 report domains for row counts, null rates, and key completeness.
+1. Profile the 4 report domains for row counts, null rates, and key completeness.
 2. Confirm the exact KPI definitions for each report.
 3. Create the raw DuckDB ingestion layer.
 4. Build dbt staging models for the highest-priority sources.
