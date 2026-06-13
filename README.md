@@ -14,7 +14,7 @@ The repository is organized so the whole implementation can be recreated locally
 │   ├── dbt_greenplanetmart/         # dbt project: staging, intermediate, marts
 │   ├── evidence_greenplanetmart/    # Evidence dashboard application
 │   └── scripts/                     # helper scripts for DuckDB and dbt
-└── project_report/                  # report notes, modelling notes, and LaTeX draft
+└── project_report/                  # report notes and modelling notes
 ```
 
 Main implementation layers:
@@ -38,7 +38,7 @@ The repository expects Python dependencies inside a local `.venv` directory and 
 
 ## Source Data
 
-The source extracts are intentionally kept outside git. To rebuild the warehouse, place the SAP CSV files in:
+The source extracts are intentionally kept outside git. To rebuild the warehouse, place the SAP CSV files ([Kaggle SAP Dataset](https://www.kaggle.com/datasets/mustafakeser4/sap-dataset-bigquery-dataset)) in:
 
 ```text
 project_implementation/source_data/
